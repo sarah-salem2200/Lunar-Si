@@ -1,27 +1,65 @@
-import { useEffect, useState } from 'react'
 
-function App() {
-  const [status, setStatus] = useState('Checking...')
+import { useRef } from "react";
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 
-  useEffect(() => {
-    fetch('/api/health')
-      .then(response => {
-        if (!response.ok) throw new Error('API Error')
-        return response.json()
-      })
-      .then(data => {
-        setStatus(data.status === 'ok' ? 'Connected' : 'Unexpected response')
-      })
-      .catch(() => setStatus('Not connected'))
-  }, [])
+import MoonScene from "./components/MoonScene";
+import "./App.css";
+
+export default function App() {
+  const controlsRef = useRef<OrbitControlsImpl | null>(null);
+
+  const zoomIn = () => {
+    const controls = controlsRef.current;
+    if (!controls) return;
+
+    controls.dollyIn(1.3);
+    controls.update();
+  };
+
+  const zoomOut = () => {
+    const controls = controlsRef.current;
+    if (!controls) return;
+
+    controls.dollyOut(1.3);
+    controls.update();
+  };
+
+  const resetView = () => {
+    controlsRef.current?.reset();
+  };
 
   return (
-    <main style={{ padding: 40, fontFamily: 'Arial' }}>
-      <h1>Lunar-Si</h1>
-      <p>Lunar Landing Site Navigator</p>
-      <p>Backend Status: <strong>{status}</strong></p>
-    </main>
-  )
-}
+    <main className="moon-app">
 
-export default App
+      <header className="top-bar">
+        <div className="logo">LUNAR-SI</div>
+        <div className="subtitle">
+          INTERACTIVE LUNAR EXPLORATION
+        </div>
+      </header>
+
+      <section className="moon-view">
+        <MoonScene controlsRef={controlsRef} />
+      </section>
+
+      <div className="moon-toolbar">
+        <button onClick={zoomIn} title="Zoom In">
+          +
+        </button>
+
+        <button onClick={zoomOut} title="Zoom Out">
+          −
+        </button>
+
+        <button onClick={resetView} title="Reset View">
+          ↺
+        </button>
+      </div>
+
+      <div className="instructions">
+        DRAG TO ROTATE · SCROLL TO ZOOM
+      </div>
+
+    </main>
+  );
+}
