@@ -218,3 +218,22 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+
+# Python environments
+**/.venv/
+**/__pycache__/
+*.py[cod]
+
+# Node
+**/node_modules/
+**/dist/
+
+# Vercel
+.vercel/
+**/.vercel/
+
+# Environment variables
+.env
+.env.*
+!.env.example
