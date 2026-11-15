@@ -35,7 +35,7 @@ The scientific framework of Lunar-Si is strictly aligned with official NASA reso
 
 * **LRO/LOLA DEM Binary Data:** High-resolution lunar laser altimeter topography grids (`ldem_2048x1024_uint16.bin`) for precise elevation and slope profiling.
 
-* **Artemis III Candidate Landing Sites:** Pre-loaded database of all 13 official NASA candidate landing sites in the lunar South Pole (e.g., *Faustini Rim A*, *Shackleton Ridge*, *Nobile Region*).
+* **Artemis III Candidate Landing Sites:** Pre-loaded database of all 9 official NASA candidate landing sites in the lunar South Pole (e.g., *Faustini Rim A*, *Shackleton Ridge*, *Nobile Region*).
 
 * **NASA Quickmap & Moon Trek Standards:** Topographic visualization logic and spatial understanding inspired by NASA's leading exploration tools.
 
@@ -60,7 +60,7 @@ The scientific framework of Lunar-Si is strictly aligned with official NASA reso
 | Endpoint | Method | Description | 
 | ----- | ----- | ----- | 
 | `/api/health` | `GET` | System health check (verifies DEM binary and custom ONNX AI model loading status). | 
-| `/api/sites` | `GET` | Returns evaluated telemetry and safety scores for all 13 official Artemis III sites using our custom AI. | 
+| `/api/sites` | `GET` | Returns evaluated telemetry and safety scores for all 9 official Artemis III sites using our custom AI. | 
 | `/api/evaluate-coordinate` | `GET` | Evaluates any custom user-clicked coordinate (`lat`, `lon`) using real DEM and our custom-trained ONNX AI model. | 
 
 ## TECH STACK
@@ -136,7 +136,7 @@ The scientific framework and data processing of Lunar-Sir are built upon officia
 - **Quickmap (Arizona State University):** Interactive mapping tool providing access to high-resolution lunar imagery and topographic datasets from NASA's LRO, utilized for surface visualization and understanding south pole topography.
 - **Moon Trek (NASA):** Interactive 3D visualization tool for lunar exploration, serving as the conceptual benchmark for spatial terrain understanding and potential landing site evaluation.
 - **Horizons System (NASA JPL):** Ephemeris computation tool calculating precise positions and velocities of celestial bodies, forming the mathematical foundation for solar illumination and Earth Line-of-Sight (LOS) assessments.
-- **Artemis III Candidate Landing Sites:** Pre-loaded database of all 13 official NASA candidate landing sites in the lunar South Pole region (e.g., Faustini Rim A, Shackleton Ridge, Nobile Region).
+- **Artemis III Candidate Landing Sites:** Pre-loaded database of all 9 official NASA candidate landing sites in the lunar South Pole region (e.g., Faustini Rim A, Shackleton Ridge, Nobile Region).
 
 ---
 
