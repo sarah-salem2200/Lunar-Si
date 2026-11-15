@@ -6,7 +6,7 @@
 <div align="center">
   <img src="assets/lunarsi_final.png" alt="Lunar Si">
 </div>
-
+ 
 ## HIGH-LEVEL PROJECT SUMMARY
 
 **Lunar-Si** is an advanced, high-performance full-stack web platform designed to bridge the gap between complex raw lunar geodetic data and intuitive mission planning. Our solution empowers aerospace engineers, researchers, and space enthusiasts to explore potential lunar landing sites in an immersive 3D environment, analyze surface topography, and calculate environmental mission telemetry in real-time. 
@@ -158,5 +158,5 @@ The scientific framework and data processing of Lunar-Sir are built upon officia
 ---
 
 <div align="center">
-  <img src="assets/lunarsi_logo.jpeg" alt="Lunar Si Logo">
+  <img src="assets/lunarsi_logo.jpeg" alt="Lunar Si Logo" width="350">
 </div>
