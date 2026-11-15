@@ -4,7 +4,7 @@
 
 
 <div align="center">
-  <img src="assets/lunarsi_final.png" alt="Lunar Si">
+  <img src="assets/lunarsi_final2.png" alt="Lunar Si">
 </div>
  
 ## HIGH-LEVEL PROJECT SUMMARY
