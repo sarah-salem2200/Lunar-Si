@@ -194,7 +194,7 @@ export default function Moon({ selectedSite, onSelectSite, moonGroupRef, onSites
 
   // جلب البيانات من سيرفر بايثون FastAPI
   useEffect(() => {
-    fetch("http://localhost:8000/api/sites")
+    fetch("https://lunar-si.vercel.app/api/sites")
       .then((res) => res.json())
       .then((data) => {
         setSites(data);
