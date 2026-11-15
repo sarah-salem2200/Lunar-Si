@@ -158,5 +158,5 @@ The scientific framework and data processing of Lunar-Sir are built upon officia
 ---
 
 <div align="center">
-  <img src="assets/lunarsi_logo.jpeg" alt="Lunar Si Logo" width="350">
+  <img src="assets/lunarsi_logo.png" alt="Lunar Si Logo" width="350">
 </div>
