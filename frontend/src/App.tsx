@@ -157,8 +157,8 @@ export default function App() {
             src="/logo.png"
             alt="Lunar-Si Logo"
             style={{
-              width: "38px",
-              height: "38px",
+              width: "100%",
+              height: "auto",
               borderRadius: "8px",
               objectFit: "cover",
               border: "1px solid rgba(0, 255, 255, 0.4)",
