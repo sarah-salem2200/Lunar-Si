@@ -11,18 +11,15 @@ export default function App() {
   const cameraRigRef = useRef<CameraRigHandle | null>(null);
   const [selectedSite, setSelectedSite] = useState<LandingSite | null>(null);
   const [sitesList, setSitesList] = useState<LandingSite[]>([]);
+  const [isPickingMode, setIsPickingMode] = useState<boolean>(false);
 
-  const zoomIn = () => {
-    cameraRigRef.current?.zoomIn();
-  };
-
-  const zoomOut = () => {
-    cameraRigRef.current?.zoomOut();
-  };
-
+  const zoomIn = () => { cameraRigRef.current?.zoomIn(); };
+  const zoomOut = () => { cameraRigRef.current?.zoomOut(); };
+  
   const resetView = () => {
     cameraRigRef.current?.resetView();
     setSelectedSite(null);
+    setIsPickingMode(false);
   };
 
   const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -33,10 +30,11 @@ export default function App() {
     }
     const found = sitesList.find((s) => s.id === siteId) || null;
     setSelectedSite(found);
+    setIsPickingMode(false);
   };
 
   return (
-    <main className="moon-app">
+    <main className="moon-app" style={{ cursor: isPickingMode ? "crosshair" : "default" }}>
       <header className="top-bar">
         <div className="logo">LUNAR-SI</div>
         <div className="subtitle">
@@ -51,10 +49,12 @@ export default function App() {
           onSelectSite={setSelectedSite}
           rigRef={cameraRigRef}
           onSitesLoaded={setSitesList}
+          isPickingMode={isPickingMode}
+          onExitPickingMode={() => setIsPickingMode(false)}
         />
       </section>
 
-      {/* Left Sidebar: Artemis III Site Selector Dropdown */}
+      {/* Left Sidebar */}
       <aside
         style={{
           position: "absolute",
@@ -90,7 +90,7 @@ export default function App() {
 
         <select
           id="site-selector"
-          value={selectedSite?.id ?? ""}
+          value={selectedSite?.id && selectedSite.id !== 999 ? selectedSite.id : ""}
           onChange={handleDropdownChange}
           style={{
             width: "100%",
@@ -101,7 +101,8 @@ export default function App() {
             border: "1px solid rgba(0, 255, 255, 0.4)",
             fontSize: "0.88rem",
             outline: "none",
-            cursor: "pointer"
+            cursor: "pointer",
+            marginBottom: "12px"
           }}
         >
           <option value="">-- Select a Landing Region --</option>
@@ -111,6 +112,27 @@ export default function App() {
             </option>
           ))}
         </select>
+
+        <button
+          onClick={() => {
+            setIsPickingMode(!isPickingMode);
+            setSelectedSite(null);
+          }}
+          style={{
+            width: "100%",
+            padding: "10px",
+            background: isPickingMode ? "rgba(0, 255, 136, 0.25)" : "rgba(0, 255, 255, 0.15)",
+            border: `1px solid ${isPickingMode ? "#00ff88" : "rgba(0, 255, 255, 0.4)"}`,
+            borderRadius: "8px",
+            color: isPickingMode ? "#00ff88" : "#00ffff",
+            fontSize: "0.83rem",
+            fontWeight: "bold",
+            cursor: "pointer",
+            transition: "all 0.2s"
+          }}
+        >
+          {isPickingMode ? "📍 Click Anywhere on Moon..." : "📍 Pick Custom Location"}
+        </button>
 
         {selectedSite && (
           <button
@@ -132,7 +154,7 @@ export default function App() {
         )}
       </aside>
 
-      {/* Right Sidebar: AI Analysis Dashboard Panel */}
+      {/* Right Sidebar */}
       {selectedSite && (
         <aside
           style={{
@@ -158,13 +180,7 @@ export default function App() {
             </h3>
             <button
               onClick={() => setSelectedSite(null)}
-              style={{
-                background: "transparent",
-                border: "none",
-                color: "#aaa",
-                fontSize: "1.2rem",
-                cursor: "pointer"
-              }}
+              style={{ background: "transparent", border: "none", color: "#aaa", fontSize: "1.2rem", cursor: "pointer" }}
               title="Close"
             >
               ✕
@@ -184,24 +200,24 @@ export default function App() {
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <span style={{ color: "#94a3b8" }}>📐 Slope Angle:</span>
-              <span>{selectedSite.slope}°</span>
+              <span>{selectedSite.slope !== null && selectedSite.slope !== undefined ? `${selectedSite.slope}°` : "Not Available"}</span>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <span style={{ color: "#94a3b8" }}>☀️ Solar Illumination:</span>
-              <span>{selectedSite.illuminationHours} hrs/day</span>
+              <span>{selectedSite.illuminationHours !== null && selectedSite.illuminationHours !== undefined ? `${selectedSite.illuminationHours} hrs/day` : "Not Available"}</span>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <span style={{ color: "#94a3b8" }}>📡 Earth Link (LOS):</span>
-              <span style={{ color: "#38bdf8" }}>{selectedSite.earthLosPercentage}% uptime</span>
+              <span style={{ color: "#38bdf8" }}>{selectedSite.earthLosPercentage !== null && selectedSite.earthLosPercentage !== undefined ? `${selectedSite.earthLosPercentage}% uptime` : "Not Available"}</span>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <span style={{ color: "#94a3b8" }}>💧 Nearest Water Ice:</span>
-              <span style={{ color: "#38bdf8" }}>~{selectedSite.waterIceDistanceKm} km away</span>
+              <span style={{ color: "#38bdf8" }}>{selectedSite.waterIceDistanceKm !== null && selectedSite.waterIceDistanceKm !== undefined ? `~${selectedSite.waterIceDistanceKm} km away` : "Not Available"}</span>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "4px" }}>
               <span style={{ color: "#94a3b8" }}>🤖 AI Safety Score:</span>
-              <span style={{ color: "#00ff88", fontWeight: "bold", fontSize: "1.15rem" }}>
-                {selectedSite.safetyScore}%
+              <span style={{ color: selectedSite.safetyScore ? "#00ff88" : "#f59e0b", fontWeight: "bold", fontSize: "1.15rem" }}>
+                {selectedSite.safetyScore !== null && selectedSite.safetyScore !== undefined ? `${selectedSite.safetyScore}%` : "Not Available"}
               </span>
             </div>
           </div>
@@ -217,7 +233,7 @@ export default function App() {
               color: "#e2e8f0"
             }}
           >
-            {selectedSite.recommendation}
+            {selectedSite.recommendation || "Not Available"}
           </div>
         </aside>
       )}
@@ -229,7 +245,9 @@ export default function App() {
       </div>
 
       <div className="instructions">
-        DRAG TO ROTATE · SCROLL TO ZOOM · SELECT OR CLICK MARKERS FOR AI ANALYSIS
+        {isPickingMode
+          ? "🎯 PICKING MODE ACTIVE: CLICK ANYWHERE ON THE MOON SURFACE"
+          : "DRAG TO ROTATE · SCROLL TO ZOOM · SELECT OR CLICK MARKERS FOR AI ANALYSIS"}
       </div>
     </main>
   );

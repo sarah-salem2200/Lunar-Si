@@ -9,10 +9,6 @@ import { useFrame } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
 
-// =====================================================
-// MOON CONFIGURATION
-// =====================================================
-
 const RADIUS = 2;
 const MOON_RADIUS_METERS = 1737400;
 const WIDTH = 2048;
@@ -21,23 +17,19 @@ const EXAGGERATION = 1.0;
 const SEGMENTS_WIDTH = 1024;
 const SEGMENTS_HEIGHT = 512;
 
-// =====================================================
-// INTERFACE
-// =====================================================
-
 export interface LandingSite {
   id: number;
   name: string;
   lat: number;
   lon: number;
   slope: number;
-  illuminationHours: number;
-  commsQuality: number;
-  earthLosPercentage: number;
-  waterIceDistanceKm: number;
+  illuminationHours?: number | null;
+  commsQuality?: number | null;
+  earthLosPercentage?: number | null;
+  waterIceDistanceKm?: number | null;
   description: string;
-  safetyScore?: number;
-  recommendation?: string;
+  safetyScore?: number | null;
+  recommendation?: string | null;
 }
 
 export function latLonToVector3(lat: number, lon: number, radius: number = RADIUS, alt: number = 0.03): THREE.Vector3 {
@@ -52,9 +44,23 @@ export function latLonToVector3(lat: number, lon: number, radius: number = RADIU
   return new THREE.Vector3(x, y, z);
 }
 
-// =====================================================
-// CINEMATIC RIPPLE WAVE MARKER COMPONENT
-// =====================================================
+export function vector3ToLatLon(vector: THREE.Vector3): { lat: number, lon: number } {
+  const normalized = vector.clone().normalize();
+  const phi = Math.acos(THREE.MathUtils.clamp(normalized.y, -1, 1));
+  const lat = 90 - phi * (180 / Math.PI);
+
+  const sinPhi = Math.sin(phi);
+  let lon = 0;
+  if (Math.abs(sinPhi) > 0.0001) {
+    const cosTheta = -normalized.x / sinPhi;
+    const sinTheta = normalized.z / sinPhi;
+    let theta = Math.atan2(sinTheta, cosTheta) * (180 / Math.PI);
+    lon = theta - 180;
+    if (lon < -180) lon += 360;
+    if (lon > 180) lon -= 360;
+  }
+  return { lat: Number(lat.toFixed(2)), lon: Number(lon.toFixed(2)) };
+}
 
 interface LandingMarkerProps {
   site: LandingSite;
@@ -93,39 +99,18 @@ function LandingMarker({ site, isSelected, onSelect }: LandingMarkerProps) {
 
   return (
     <group position={position} rotation={rotation}>
-      <mesh
-        onClick={(e) => {
-          e.stopPropagation();
-          onSelect(site);
-        }}
-      >
+      <mesh onClick={(e) => { e.stopPropagation(); onSelect(site); }}>
         <sphereGeometry args={[isSelected ? 0.024 : 0.018, 16, 16]} />
         <meshBasicMaterial color={markerColor} />
       </mesh>
 
-      <mesh
-        ref={ringRef}
-        onClick={(e) => {
-          e.stopPropagation();
-          onSelect(site);
-        }}
-      >
+      <mesh ref={ringRef} onClick={(e) => { e.stopPropagation(); onSelect(site); }}>
         <ringGeometry args={[0.02, 0.0235, 32]} />
-        <meshBasicMaterial
-          ref={materialRef}
-          color={markerColor}
-          side={THREE.DoubleSide}
-          transparent
-          opacity={1}
-        />
+        <meshBasicMaterial ref={materialRef} color={markerColor} side={THREE.DoubleSide} transparent opacity={1} />
       </mesh>
     </group>
   );
 }
-
-// =====================================================
-// ELEVATION LOADER
-// =====================================================
 
 let elevationPromise: Promise<Uint16Array> | null = null;
 
@@ -177,24 +162,23 @@ function sampleElevation(data: Uint16Array, u: number, v: number, northAverage: 
   return top * (1 - fy) + bottom * fy;
 }
 
-// =====================================================
-// MOON COMPONENT
-// =====================================================
-
 interface MoonProps {
   selectedSite: LandingSite | null;
   onSelectSite?: (site: LandingSite) => void;
   moonGroupRef: React.RefObject<THREE.Group | null>;
   onSitesLoaded?: (sites: LandingSite[]) => void;
+  isPickingMode?: boolean;
+  onExitPickingMode?: () => void;
 }
 
-export default function Moon({ selectedSite, onSelectSite, moonGroupRef, onSitesLoaded }: MoonProps) {
+export default function Moon({ selectedSite, onSelectSite, moonGroupRef, onSitesLoaded, isPickingMode, onExitPickingMode }: MoonProps) {
   const [sites, setSites] = useState<LandingSite[]>([]);
   const colorMap = useTexture("/textures/lroc_color_16bit_srgb_4k.png");
 
-  // جلب البيانات من سيرفر بايثون FastAPI
   useEffect(() => {
-    fetch("https://lunar-si.vercel.app/api/sites")
+    const API_BASE = import.meta.env.DEV ? "http://127.0.0.1:8000" : "";
+
+    fetch(`${API_BASE}/api/sites`)
       .then((res) => res.json())
       .then((data) => {
         setSites(data);
@@ -224,7 +208,7 @@ export default function Moon({ selectedSite, onSelectSite, moonGroupRef, onSites
         const uvs = geometry.attributes.uv;
 
         let northSum = 0;
-        let southSum =0;
+        let southSum = 0;
         for (let x = 0; x < WIDTH; x++) {
           northSum += elevation[x];
           southSum += elevation[(HEIGHT - 1) * WIDTH + x];
@@ -261,18 +245,41 @@ export default function Moon({ selectedSite, onSelectSite, moonGroupRef, onSites
     return () => { cancelled = true; };
   }, [geometry]);
 
-  useFrame((_, delta) => {
+  useFrame(((_, delta) => {
     if (moonGroupRef.current && !selectedSite) {
       moonGroupRef.current.rotation.y += delta * 0.010;
     }
-  });
+  }));
 
   return (
     <group ref={moonGroupRef}>
-      <mesh geometry={geometry}>
+      <mesh
+        geometry={geometry}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (!isPickingMode) return;
+          
+          if (moonGroupRef.current) {
+            const localPoint = e.point.clone();
+            moonGroupRef.current.worldToLocal(localPoint);
+            const { lat, lon } = vector3ToLatLon(localPoint);
+
+            const API_BASE = import.meta.env.DEV ? "http://127.0.0.1:8000" : "";
+
+            fetch(`${API_BASE}/api/evaluate-coordinate?lat=${lat}&lon=${lon}`)
+              .then((res) => res.json())
+              .then((data) => {
+                if (onSelectSite) onSelectSite(data);
+                if (onExitPickingMode) onExitPickingMode();
+              })
+              .catch((err) => console.error("Failed to fetch custom coordinate evaluation:", err));
+          }
+        }}
+      >
         <meshStandardMaterial map={colorMap} roughness={1} metalness={0} />
       </mesh>
 
+      {/* العلامات الـ 13 الأساسية */}
       {sites.map((site) => (
         <LandingMarker
           key={site.id}
@@ -283,6 +290,16 @@ export default function Moon({ selectedSite, onSelectSite, moonGroupRef, onSites
           }}
         />
       ))}
+
+      {/* الدائرة المتحركة للموقع المخصص المختار بالماوس */}
+      {selectedSite && selectedSite.id === 999 && (
+        <LandingMarker
+          key="custom-marker"
+          site={selectedSite}
+          isSelected={true}
+          onSelect={() => {}}
+        />
+      )}
     </group>
   );
 }

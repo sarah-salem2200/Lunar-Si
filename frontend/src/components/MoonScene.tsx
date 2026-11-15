@@ -91,6 +91,8 @@ interface MoonSceneProps {
   onSelectSite?: (site: LandingSite) => void;
   rigRef: RefObject<CameraRigHandle | null>;
   onSitesLoaded?: (sites: LandingSite[]) => void;
+  isPickingMode?: boolean;
+  onExitPickingMode?: () => void;
 }
 
 export default function MoonScene({
@@ -98,40 +100,26 @@ export default function MoonScene({
   selectedSite,
   onSelectSite,
   rigRef,
-  onSitesLoaded
+  onSitesLoaded,
+  isPickingMode,
+  onExitPickingMode
 }: MoonSceneProps) {
   const moonGroupRef = useRef<THREE.Group | null>(null);
 
   return (
-    <Canvas
-      camera={{
-        position: [0, 0, 7],
-        fov: 45,
-      }}
-      gl={{ antialias: true }}
-    >
+    <Canvas camera={{ position: [0, 0, 7], fov: 45 }} gl={{ antialias: true }}>
       <color attach="background" args={["#02030a"]} />
-
       <ambientLight intensity={0.2} />
-
-      <directionalLight
-        position={[5, -3, 5]}
-        intensity={3}
-      />
-
-      <Stars
-        radius={100}
-        depth={50}
-        count={5000}
-        factor={4}
-        fade
-      />
-
+      <directionalLight position={[5, -3, 5]} intensity={3} />
+      <Stars radius={100} depth={50} count={5000} factor={4} fade />
+      
       <Moon
         selectedSite={selectedSite}
         onSelectSite={onSelectSite}
         moonGroupRef={moonGroupRef}
         onSitesLoaded={onSitesLoaded}
+        isPickingMode={isPickingMode}
+        onExitPickingMode={onExitPickingMode}
       />
 
       <CameraRig
