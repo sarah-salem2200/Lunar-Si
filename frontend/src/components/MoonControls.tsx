@@ -1,27 +1,23 @@
-
-import { OrbitControls } from "@react-three/drei";
-import type { Ref } from "react";
+import type { RefObject } from "react";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
+import { OrbitControls } from "@react-three/drei";
 
 interface MoonControlsProps {
-  controlsRef?: Ref<OrbitControlsImpl>;
+  controlsRef: RefObject<OrbitControlsImpl | null>;
 }
 
-export default function MoonControls({
-  controlsRef,
-}: MoonControlsProps) {
+export default function MoonControls({ controlsRef }: MoonControlsProps) {
   return (
     <OrbitControls
       ref={controlsRef}
-      enablePan
-      enableZoom
-      enableRotate
-      minDistance={2.5}
-      maxDistance={15}
-      zoomSpeed={0.7}
+      enablePan={true}
+      enableZoom={true}
+      minDistance={2.3}
+      maxDistance={12}
+      enableDamping={true}     /* 👈 تفعيل النعومة والتثبيط لحركة الماوس */
+      dampingFactor={0.05}     /* 👈 معامل التباطؤ التدريجي */
       rotateSpeed={0.6}
-      enableDamping
-      dampingFactor={0.05}
+      zoomSpeed={0.8}
     />
   );
 }
