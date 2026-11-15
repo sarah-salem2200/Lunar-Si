@@ -85,7 +85,7 @@ export default function App() {
             marginBottom: "8px"
           }}
         >
-          🛰️ Artemis III Candidate Sites (13)
+          🛰️ Artemis III Candidate Sites
         </label>
 
         <select

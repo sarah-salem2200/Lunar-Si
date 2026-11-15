@@ -14,8 +14,8 @@ export default function MoonControls({ controlsRef }: MoonControlsProps) {
       enableZoom={true}
       minDistance={2.3}
       maxDistance={12}
-      enableDamping={true}     /* 👈 تفعيل النعومة والتثبيط لحركة الماوس */
-      dampingFactor={0.05}     /* 👈 معامل التباطؤ التدريجي */
+      enableDamping={true}    
+      dampingFactor={0.05}   
       rotateSpeed={0.6}
       zoomSpeed={0.8}
     />

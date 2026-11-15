@@ -279,7 +279,6 @@ export default function Moon({ selectedSite, onSelectSite, moonGroupRef, onSites
         <meshStandardMaterial map={colorMap} roughness={1} metalness={0} />
       </mesh>
 
-      {/* العلامات الـ 13 الأساسية */}
       {sites.map((site) => (
         <LandingMarker
           key={site.id}
@@ -291,7 +290,7 @@ export default function Moon({ selectedSite, onSelectSite, moonGroupRef, onSites
         />
       ))}
 
-      {/* الدائرة المتحركة للموقع المخصص المختار بالماوس */}
+      
       {selectedSite && selectedSite.id === 999 && (
         <LandingMarker
           key="custom-marker"
