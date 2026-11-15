@@ -154,7 +154,7 @@ export default function App() {
         )}
 
         <img
-            src="/assets/lunarsi_logo.jpeg"
+            src="/logo.png"
             alt="Lunar-Si Logo"
             style={{
               width: "38px",
@@ -165,7 +165,7 @@ export default function App() {
               boxShadow: "0 2px 8px rgba(0, 255, 255, 0.2)"
             }}
           />
-          
+
       </aside>
 
       {/* Right Sidebar */}
