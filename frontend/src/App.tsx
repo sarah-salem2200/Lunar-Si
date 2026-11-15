@@ -152,6 +152,20 @@ export default function App() {
             ↺ Resume Orbit & Clear Selection
           </button>
         )}
+
+        <img
+            src="/assets/lunarsi_logo.jpeg"
+            alt="Lunar-Si Logo"
+            style={{
+              width: "38px",
+              height: "38px",
+              borderRadius: "8px",
+              objectFit: "cover",
+              border: "1px solid rgba(0, 255, 255, 0.4)",
+              boxShadow: "0 2px 8px rgba(0, 255, 255, 0.2)"
+            }}
+          />
+          
       </aside>
 
       {/* Right Sidebar */}
